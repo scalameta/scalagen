@@ -1,6 +1,11 @@
 package org.scalameta.scalagen.generators
 
 import scala.meta._
+import scala.meta.contrib._
+
+trait Generator {
+  def name: Type.Name
+}
 
 /**
   * Use this trait for extending existing definitions.
@@ -9,10 +14,16 @@ import scala.meta._
   *
   * Default: Add no new stats
   */
-trait ExtensionGenerator {
+trait ExtensionGenerator extends Generator {
   def extend(c: Defn.Class): List[Stat] = Nil
   def extend(t: Defn.Trait): List[Stat] = Nil
   def extend(o: Defn.Object): List[Stat] = Nil
+
+  private[scalagen] val generator: PartialFunction[Tree, Tree] = {
+    case c: Defn.Class => c.withStats(extend(c))
+    case t: Defn.Trait => t.withStats(extend(t))
+    case o: Defn.Object => o.withStats(extend(o))
+  }
 }
 
 /**
@@ -24,7 +35,7 @@ trait ExtensionGenerator {
   *
   * Note: These *will* generate a companion if one does not exist.
   */
-trait CompanionGenerator {
+trait CompanionGenerator extends Generator {
   def extendCompanion(c: Defn.Class): List[Stat] = Nil
   def extendCompanion(c: Defn.Type): List[Stat] = Nil
   def extendCompanion(c: Defn.Trait): List[Stat] = Nil
@@ -39,7 +50,7 @@ trait CompanionGenerator {
   *
   * Default: return the input
   */
-trait ManipulationGenerator {
+trait ManipulationGenerator extends Generator {
   def manipulate(c: Defn.Class): Defn.Class = c
   def manipulate(t: Defn.Trait): Defn.Trait = t
   def manipulate(o: Defn.Object): Defn.Object = o
@@ -60,7 +71,7 @@ trait ManipulationGenerator {
   *
   * Default: return the input
   */
-trait TransmutationGenerator {
+trait TransmutationGenerator extends Generator {
   def transmute(c: Defn.Class): List[Defn] = c :: Nil
   def transmute(t: Defn.Trait): List[Defn] = t :: Nil
   def transmute(o: Defn.Object): List[Defn] = o :: Nil
