@@ -27,4 +27,4 @@ lazy val sbtScalagen =
     .in(file("scalagen-sbt"))
     .settings(sharedSettings)
     .settings(moduleName := "sbt-scalagen")
-    .dependsOn(scalagenJVM)
+    .dependsOn(scalagen)
