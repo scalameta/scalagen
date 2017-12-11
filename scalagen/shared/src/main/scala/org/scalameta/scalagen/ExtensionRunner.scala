@@ -9,7 +9,7 @@ import scala.meta.contrib._
  * Will transform only extension generators.
  * But is the fastest and easiest to implement
  */
-case class ExtensionRunner[A <: Tree](in: A, generators: Set[Generator]) {
+case class ExtensionRunner(generators: Set[Generator]) {
 
   val generator_cache: Map[String, Generator] =
     generators.map(g => g.name -> g).toMap
@@ -17,7 +17,7 @@ case class ExtensionRunner[A <: Tree](in: A, generators: Set[Generator]) {
   // TODO: Make the asInstanceOf not necessary by using a custom transform
   // This also traverses pre-order, which is wrong
   // We can also optimize this, by not traversing entire tree's
-  def transform: A =
+  def transform[A <: Tree](in: A): A =
     in.transform {
         case c: Defn.Class =>
           generate(c, findGenerators(c)(implicitly[Extract[Defn.Class, Mod]]))
