@@ -3,12 +3,12 @@ script:
   - ./bin/runci.sh ci
 jdk:
  - oraclejdk8
- stages:
-  - name: test
 
+stages:
+  - name: test
   # Disabled till release infrastructure is in place
-  - name: release
-    if: false #(branch = master) AND (type = push)
+  #- name: release
+  #  if: (branch = master) AND (type = push)
 
 jobs:
   include:
@@ -18,16 +18,17 @@ jobs:
     - env: TEST="sbt test"
       script: sbt test
     # release only on merge commits or tags
-    - stage: release
-      script: if [[ "$(git rev-list --merges HEAD^..HEAD)" || "$TRAVIS_TAG" ]]; then sbt releaseEarly; else echo "skipping release"; fi
+    #- stage: release
+    #  script: if [[ "$(git rev-list --merges HEAD^..HEAD)" || "$TRAVIS_TAG" ]]; then sbt releaseEarly; else echo "skipping release"; fi
+
 cache:
   directories:
-  - $HOME/.sbt/0.13/dependency
-  - $HOME/.sbt/boot/scala*
-  - $HOME/.sbt/launchers
-  - $HOME/.ivy2/cache
-  - $HOME/.coursier
-  - target/repos
+    - $HOME/.sbt/0.13/dependency
+    - $HOME/.sbt/boot/scala*
+    - $HOME/.sbt/launchers
+    - $HOME/.ivy2/cache
+    - $HOME/.coursier
+    - target/repos
 before_cache:
   - du -h -d 1 $HOME/.ivy2/cache
   - du -h -d 2 $HOME/.sbt/
