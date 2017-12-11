@@ -16,3 +16,13 @@ class StructuralToString extends ExtensionGenerator("StructuralToString") {
     newToString :: Nil
   }
 }
+
+class PrintHi extends ExtensionGenerator("PrintHi") {
+  override def extend(c: Defn.Class): List[Stat] = {
+    val hi: Lit.String = Lit.String("hi")
+    val hiMethod: Defn.Def =
+      q"def hi = println($hi)"
+
+    hiMethod :: Nil
+  }
+}

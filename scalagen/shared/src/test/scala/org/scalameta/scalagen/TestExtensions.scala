@@ -2,6 +2,7 @@ package org.scalameta.scalagen
 
 import scala.meta._
 import scala.meta.contrib._
+import org.scalameta.scalagen.generators._
 import org.scalatest._
 
 class TestExtensions extends FunSuite {
@@ -9,12 +10,25 @@ class TestExtensions extends FunSuite {
   test("Expansion works") {
     val clazz: Defn.Class = q"@StructuralToString case class Foo(x: Int, y: Int)"
     val generator = new StructuralToString()
-    val runner = Runner(clazz, Set(generator))
+    val runner = ExtensionRunner(clazz, Set(generator))
 
     val out: Defn.Class = runner.transform
 
     assert(clazz.extract[Stat].size === 0)
     assert(out.extract[Stat].size === 1)
+    assert(!clazz.isEqual(out))
+  }
+
+  test("Mutliple Expansion works") {
+    val clazz: Defn.Class =
+      q"@PrintHi @StructuralToString case class Foo(x: Int, y: Int)"
+    val generators: Set[Generator] = Set(new StructuralToString(), new PrintHi())
+    val runner = ExtensionRunner(clazz, generators)
+
+    val out: Defn.Class = runner.transform
+
+    assert(clazz.extract[Stat].size === 0)
+    assert(out.extract[Stat].size === 2)
     assert(!clazz.isEqual(out))
   }
 
@@ -24,7 +38,7 @@ class TestExtensions extends FunSuite {
     val clazz: Defn.Class =
       q"@StructuralToString case class Foo(x: Int, y: Int) { $inner }"
     val generator = new StructuralToString()
-    val runner = Runner(clazz, Set(generator))
+    val runner = ExtensionRunner(clazz, Set(generator))
 
     val out: Defn.Class = runner.transform
 
@@ -40,7 +54,7 @@ class TestExtensions extends FunSuite {
   test("Expansion noop") {
     val clazz: Defn.Class = q"case class Foo(x: Int, y: Int)"
     val generator = new StructuralToString()
-    val runner = Runner(clazz, Set(generator))
+    val runner = ExtensionRunner(clazz, Set(generator))
 
     val out: Defn.Class = runner.transform
 

@@ -1,7 +1,6 @@
 package org.scalameta.scalagen.generators
 
 import scala.meta._
-import scala.meta.contrib._
 import scala.annotation.StaticAnnotation
 
 trait Generator extends StaticAnnotation {
@@ -19,15 +18,6 @@ abstract class ExtensionGenerator(val name: String) extends Generator {
   def extend(c: Defn.Class): List[Stat] = Nil
   def extend(t: Defn.Trait): List[Stat] = Nil
   def extend(o: Defn.Object): List[Stat] = Nil
-
-  private[scalagen] val generator: PartialFunction[Tree, Tree] = {
-    case c: Defn.Class =>
-      c.withStats(c.extract[Stat] ::: extend(c))
-    case t: Defn.Trait =>
-      t.withStats(t.extract[Stat] ::: extend(t))
-    case o: Defn.Object =>
-      o.withStats(o.extract[Stat] ::: extend(o))
-  }
 }
 
 object IdentityGenerator extends ExtensionGenerator("Identity")
