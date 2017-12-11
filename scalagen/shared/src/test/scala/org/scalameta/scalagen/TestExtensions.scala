@@ -16,7 +16,7 @@ class TestExtensions extends FunSuite {
 
     assert(clazz.extract[Stat].size === 0)
     assert(out.extract[Stat].size === 1)
-    assert(!clazz.isEqual(out))
+    assert(!clazz.withMods(Nil).isEqual(out))
   }
 
   test("Mutliple Expansion works") {
@@ -29,7 +29,38 @@ class TestExtensions extends FunSuite {
 
     assert(clazz.extract[Stat].size === 0)
     assert(out.extract[Stat].size === 2)
-    assert(!clazz.isEqual(out))
+    assert(!clazz.withMods(Nil).isEqual(out))
+  }
+
+  ignore("Recursion Disabled by default") {
+    val clazz: Defn.Class =
+      q"@TestRecurse case class Foo(x: Int, y: Int)"
+    val generators: Set[Generator] =
+      Set(new StructuralToString(), new PrintHi(), new TestRecurse())
+    val runner = ExtensionRunner(generators)
+
+    val out: Defn.Class = runner.transform(clazz)
+
+    assert(clazz.extract[Stat].size === 0)
+    assert(out.extract[Stat].size === 1)
+    assert(!clazz.withMods(Nil).isEqual(out))
+    assert(out.extract[Stat].head.asInstanceOf[Defn.Class].extract[Stat].isEmpty)
+  }
+
+  test("Recursion works") {
+    val clazz: Defn.Class =
+      q"@TestRecurse case class Foo(x: Int, y: Int)"
+    val generators: Set[Generator] =
+      Set(new StructuralToString(), new PrintHi(), new TestRecurse())
+    val runner = ExtensionRunner(generators, true)
+
+    val out: Defn.Class = runner.transform(clazz)
+
+    assert(clazz.extract[Stat].size === 0)
+    assert(out.extract[Stat].size === 1)
+    assert(!clazz.withMods(Nil).isEqual(out))
+    val inner = out.extract[Stat].head.asInstanceOf[Defn.Class]
+    assert(inner.extract[Stat].size == 1)
   }
 
   test("Nested Expansion works") {
@@ -47,8 +78,8 @@ class TestExtensions extends FunSuite {
     val outInner = out.extract[Stat].head.asInstanceOf[Defn.Class]
 
     assert(outInner.extract[Stat].size === 1)
-    assert(outInner.withStats(Nil) isEqual inner)
-    assert(!clazz.isEqual(out))
+    assert(outInner.withStats(Nil) isEqual inner.withMods(Nil))
+    assert(!clazz.withMods(Nil).isEqual(out))
   }
 
   test("Expansion noop") {
@@ -60,6 +91,6 @@ class TestExtensions extends FunSuite {
 
     assert(clazz.extract[Stat].isEmpty)
     assert(out.extract[Stat].isEmpty)
-    assert(clazz isEqual out)
+    assert(clazz.withMods(Nil) isEqual out)
   }
 }

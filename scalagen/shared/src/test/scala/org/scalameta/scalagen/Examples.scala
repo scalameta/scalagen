@@ -26,3 +26,11 @@ class PrintHi extends ExtensionGenerator("PrintHi") {
     hiMethod :: Nil
   }
 }
+
+class TestRecurse extends ExtensionGenerator("TestRecurse") {
+  override def extend(c: Defn.Class): List[Stat] = {
+    val clazz = q"@PrintHi class Foo"
+
+    clazz :: Nil
+  }
+}
