@@ -2,9 +2,10 @@ package org.scalameta.scalagen.generators
 
 import scala.meta._
 import scala.meta.contrib._
+import scala.annotation.StaticAnnotation
 
-trait Generator {
-  def name: Type.Name
+trait Generator extends StaticAnnotation {
+  def name: String
 }
 
 /**
@@ -14,17 +15,22 @@ trait Generator {
   *
   * Default: Add no new stats
   */
-trait ExtensionGenerator extends Generator {
+abstract class ExtensionGenerator(val name: String) extends Generator {
   def extend(c: Defn.Class): List[Stat] = Nil
   def extend(t: Defn.Trait): List[Stat] = Nil
   def extend(o: Defn.Object): List[Stat] = Nil
 
   private[scalagen] val generator: PartialFunction[Tree, Tree] = {
-    case c: Defn.Class => c.withStats(extend(c))
-    case t: Defn.Trait => t.withStats(extend(t))
-    case o: Defn.Object => o.withStats(extend(o))
+    case c: Defn.Class =>
+      c.withStats(c.extract[Stat] ::: extend(c))
+    case t: Defn.Trait =>
+      t.withStats(t.extract[Stat] ::: extend(t))
+    case o: Defn.Object =>
+      o.withStats(o.extract[Stat] ::: extend(o))
   }
 }
+
+object IdentityGenerator extends ExtensionGenerator("Identity")
 
 /**
   * Use this trait for extending the case class of a Defn.
