@@ -12,7 +12,6 @@ import scala.collection.breakOut
   * But is the fastest and easiest to implement
   */
 case class ExtensionRunner(generators: Set[Generator], recurse: Boolean = false) {
-
   val generator_cache: Map[String, Generator] =
     generators.map(g => g.name -> g).toMap
 
@@ -51,9 +50,13 @@ case class ExtensionRunner(generators: Set[Generator], recurse: Boolean = false)
         )
     }
 
-    // Aka did not noop
-    if (!result.isEqual(t)) {
-      return transform(result)
+    // If we are expanding recursive definions
+    if (recurse) {
+      // Aka did not noop
+      if (!result.isEqual(t)) {
+        println("recursing")
+        return transform(result)
+      }
     }
 
     result

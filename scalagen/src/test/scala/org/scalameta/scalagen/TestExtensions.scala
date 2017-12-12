@@ -32,12 +32,25 @@ class TestExtensions extends FunSuite {
     assert(!clazz.withMods(Nil).isEqual(out))
   }
 
+  test("Duplicate Expansion works") {
+    val clazz: Defn.Class =
+      q"@PrintHi @PrintHi case class Foo(x: Int, y: Int)"
+    val generators: Set[Generator] = Set(new StructuralToString(), new PrintHi())
+    val runner = ExtensionRunner(generators)
+
+    val out: Defn.Class = runner.transform(clazz)
+
+    assert(clazz.extract[Stat].size === 0)
+    assert(out.extract[Stat].size === 2)
+    assert(!clazz.withMods(Nil).isEqual(out))
+  }
+
   ignore("Recursion Disabled by default") {
     val clazz: Defn.Class =
       q"@TestRecurse case class Foo(x: Int, y: Int)"
     val generators: Set[Generator] =
       Set(new StructuralToString(), new PrintHi(), new TestRecurse())
-    val runner = ExtensionRunner(generators)
+    val runner = ExtensionRunner(generators, recurse = true)
 
     val out: Defn.Class = runner.transform(clazz)
 
@@ -47,12 +60,14 @@ class TestExtensions extends FunSuite {
     assert(out.extract[Stat].head.asInstanceOf[Defn.Class].extract[Stat].isEmpty)
   }
 
+  // Fails due to traversal being pre-order, thus the outer is generated and
+  // Then the tranformation travels over children.
   test("Recursion works") {
     val clazz: Defn.Class =
       q"@TestRecurse case class Foo(x: Int, y: Int)"
     val generators: Set[Generator] =
       Set(new StructuralToString(), new PrintHi(), new TestRecurse())
-    val runner = ExtensionRunner(generators, true)
+    val runner = ExtensionRunner(generators, recurse = true)
 
     val out: Defn.Class = runner.transform(clazz)
 
