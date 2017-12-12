@@ -54,7 +54,6 @@ case class ExtensionRunner(generators: Set[Generator], recurse: Boolean = false)
     if (recurse) {
       // Aka did not noop
       if (!result.isEqual(t)) {
-        println("recursing")
         return transform(result)
       }
     }
