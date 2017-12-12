@@ -11,7 +11,7 @@ class TestManipulation extends FunSuite {
     val deff = q"@LogCalls def foo = 1"
 
     val generator = new LogCalls()
-    val runner = ManipulationRunner(Set(generator))
+    val runner = Runner(Set(generator))
 
     val out = runner.transform(deff)
 
