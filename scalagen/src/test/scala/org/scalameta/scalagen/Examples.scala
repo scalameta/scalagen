@@ -34,3 +34,11 @@ class TestRecurse extends ExtensionGenerator("TestRecurse") {
     clazz :: Nil
   }
 }
+
+class LogCalls extends ManipulationGenerator("LogCalls") {
+  override def manipulate(d: Defn.Def): Defn.Def = {
+    val stats = d.extract[Stat]
+    val logger = q"println(${d.name.value} called)"
+    d.withStats(logger :: stats)
+  }
+}
