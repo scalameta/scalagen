@@ -10,7 +10,7 @@ class TestExtensions extends FunSuite {
   test("Expansion works") {
     val clazz: Defn.Class = q"@StructuralToString case class Foo(x: Int, y: Int)"
     val generator = new StructuralToString()
-    val runner = ExtensionRunner(Set(generator))
+    val runner = Runner(Set(generator))
 
     val out: Defn.Class = runner.transform(clazz)
 
@@ -23,7 +23,7 @@ class TestExtensions extends FunSuite {
     val clazz: Defn.Class =
       q"@PrintHi @StructuralToString case class Foo(x: Int, y: Int)"
     val generators: Set[Generator] = Set(new StructuralToString(), new PrintHi())
-    val runner = ExtensionRunner(generators)
+    val runner = Runner(generators)
 
     val out: Defn.Class = runner.transform(clazz)
 
@@ -36,7 +36,7 @@ class TestExtensions extends FunSuite {
     val clazz: Defn.Class =
       q"@PrintHi @PrintHi case class Foo(x: Int, y: Int)"
     val generators: Set[Generator] = Set(new StructuralToString(), new PrintHi())
-    val runner = ExtensionRunner(generators)
+    val runner = Runner(generators)
 
     val out: Defn.Class = runner.transform(clazz)
 
@@ -45,12 +45,23 @@ class TestExtensions extends FunSuite {
     assert(!clazz.withMods(Nil).isEqual(out))
   }
 
+  test("Annotations are removed") {
+    val clazz: Defn.Class =
+      q"@PrintHi case class Foo(x: Int, y: Int)"
+    val generators: Set[Generator] = Set(new PrintHi())
+    val runner = Runner(generators)
+
+    val out: Defn.Class = runner.transform(clazz)
+
+    assert(out.extract[Mod].size == 1)
+  }
+
   ignore("Recursion Disabled by default") {
     val clazz: Defn.Class =
       q"@TestRecurse case class Foo(x: Int, y: Int)"
     val generators: Set[Generator] =
       Set(new StructuralToString(), new PrintHi(), new TestRecurse())
-    val runner = ExtensionRunner(generators, recurse = true)
+    val runner = Runner(generators, recurse = true)
 
     val out: Defn.Class = runner.transform(clazz)
 
@@ -67,7 +78,7 @@ class TestExtensions extends FunSuite {
       q"@TestRecurse case class Foo(x: Int, y: Int)"
     val generators: Set[Generator] =
       Set(new StructuralToString(), new PrintHi(), new TestRecurse())
-    val runner = ExtensionRunner(generators, recurse = true)
+    val runner = Runner(generators, recurse = true)
 
     val out: Defn.Class = runner.transform(clazz)
 
@@ -84,7 +95,7 @@ class TestExtensions extends FunSuite {
     val clazz: Defn.Class =
       q"@StructuralToString case class Foo(x: Int, y: Int) { $inner }"
     val generator = new StructuralToString()
-    val runner = ExtensionRunner(Set(generator))
+    val runner = Runner(Set(generator))
 
     val out: Defn.Class = runner.transform(clazz)
 
@@ -93,19 +104,17 @@ class TestExtensions extends FunSuite {
     val outInner = out.extract[Stat].head.asInstanceOf[Defn.Class]
 
     assert(outInner.extract[Stat].size === 1)
-    assert(outInner.withStats(Nil) isEqual inner.withMods(Nil))
-    assert(!clazz.withMods(Nil).isEqual(out))
   }
 
   test("Expansion noop") {
     val clazz: Defn.Class = q"case class Foo(x: Int, y: Int)"
     val generator = new StructuralToString()
-    val runner = ExtensionRunner(Set(generator))
+    val runner = Runner(Set(generator))
 
     val out: Defn.Class = runner.transform(clazz)
 
     assert(clazz.extract[Stat].isEmpty)
     assert(out.extract[Stat].isEmpty)
-    assert(clazz.withMods(Nil) isEqual out)
+    assert(clazz isEqual out)
   }
 }
