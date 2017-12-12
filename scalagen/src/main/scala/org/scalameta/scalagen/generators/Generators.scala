@@ -46,7 +46,7 @@ trait CompanionGenerator extends Generator {
   *
   * Default: return the input
   */
-trait ManipulationGenerator extends Generator {
+abstract class ManipulationGenerator(val name: String) extends Generator {
   def manipulate(c: Defn.Class): Defn.Class = c
   def manipulate(t: Defn.Trait): Defn.Trait = t
   def manipulate(o: Defn.Object): Defn.Object = o
