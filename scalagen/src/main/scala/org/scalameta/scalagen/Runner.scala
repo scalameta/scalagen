@@ -4,6 +4,7 @@ import org.scalameta.scalagen.generators._
 
 import scala.meta._
 import scala.meta.contrib._
+import org.scalameta.scalagen.implicits._
 
 import scala.collection.breakOut
 
@@ -19,7 +20,7 @@ case class Runner(generators: Set[Generator], recurse: Boolean = false) {
   // This also traverses pre-order, which is wrong
   // We can also optimize this, by not traversing entire tree's
   def transform[A <: Tree](in: A): A =
-    in.transform {
+    in.leafFirstTransform {
         case c: Defn.Class =>
           generate(c, findGenerators(c))
         case o: Defn.Object =>
@@ -44,6 +45,7 @@ case class Runner(generators: Set[Generator], recurse: Boolean = false) {
     if (recurse) {
       // Aka did not noop
 
+      println("Recursing: " + result.syntax)
       if (result.syntax != t.syntax) {
         return transform(result)
       }
