@@ -1,3 +1,5 @@
 package org.scalameta.scalagen
 
-package object implicits extends Traversal
+import org.scalameta.scalagen.instances.ExtraInstances
+
+package object implicits extends Traversal with LogicalParent with FindCompanion with ExtraInstances
