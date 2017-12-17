@@ -54,7 +54,7 @@ case class Runner(generators: Set[Generator], recurse: Boolean = false) {
     result
   }
 
-  private def applyGenerator[A <: Tree](in: A, g: Generator): A =  {
+  private def applyGenerator[A <: Tree](in: A, g: Generator): A = {
     g match {
       case m: ManipulationGenerator => applyManipulator(in, m)
       case e: ExtensionGenerator => applyExtender(in, e)
@@ -117,8 +117,7 @@ case class Runner(generators: Set[Generator], recurse: Boolean = false) {
     t.withMods(newMods)
   }
 
-  private def findGenerators[B <: Tree](a: B)(
-      implicit ev: Extract[B, Mod]): List[Generator] = {
+  private def findGenerators[B <: Tree](a: B)(implicit ev: Extract[B, Mod]): List[Generator] = {
     ev.extract(a).collect {
       case Mod.Annot(Init(Type.Name(n), _, _)) if generator_cache.contains(n) =>
         generator_cache(n) match {
