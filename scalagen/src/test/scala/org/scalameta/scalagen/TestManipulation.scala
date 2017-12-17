@@ -5,18 +5,22 @@ import scala.meta.contrib._
 import org.scalameta.scalagen.generators._
 import org.scalatest._
 
-class TestManipulation extends FunSuite {
+class TestManipulation extends GeneratorSuite {
 
   test("Manipulation works") {
     val deff = q"@LogCalls def foo = 1"
 
-    val generator = new LogCalls()
-    val runner = Runner(Set(generator))
+    val expected: Defn.Def =
+      q"""def foo = {
+          println("foo was called")
+          1
+        }
+       """
 
-    val out = runner.transform(deff)
+    val res = generate(deff, LogCalls())
 
-    assert(deff.extract[Stat].size === 1)
-    assert(out.extract[Stat].size === 2)
-    assert(!deff.withMods(Nil).isEqual(out))
+    withClue(res.syntax) {
+      assert(expected isEqual res)
+    }
   }
 }

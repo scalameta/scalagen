@@ -8,16 +8,16 @@ import org.scalameta.scalagen.generators._
   * Will print the structure of the class as it's toString.
   * Not super useful, but a simple example to test with
   */
-class StructuralToString extends ExtensionGenerator("StructuralToString") {
+case class SyntaxToString() extends ExtensionGenerator("SyntaxToString") {
   override def extend(d: Defn.Class): List[Stat] = {
-    val structure: Lit.String = Lit.String(d.withStats(Nil).structure)
-    val newToString: Defn.Def = q"def toString = $structure"
+    val syntax: Lit.String = Lit.String(d.withStats(Nil).syntax)
+    val newToString: Defn.Def = q"def toString = $syntax"
 
     newToString :: Nil
   }
 }
 
-class PrintHi extends ExtensionGenerator("PrintHi") {
+case class PrintHi() extends ExtensionGenerator("PrintHi") {
   override def extend(c: Defn.Class): List[Stat] = {
     val hi: Lit.String = Lit.String("hi")
     val hiMethod: Defn.Def =
@@ -27,7 +27,7 @@ class PrintHi extends ExtensionGenerator("PrintHi") {
   }
 }
 
-class TestRecurse extends ExtensionGenerator("TestRecurse") {
+case class TestRecurse() extends ExtensionGenerator("TestRecurse") {
   override def extend(c: Defn.Class): List[Stat] = {
     val clazz = q"@PrintHi class Foo"
 
@@ -35,10 +35,10 @@ class TestRecurse extends ExtensionGenerator("TestRecurse") {
   }
 }
 
-class LogCalls extends ManipulationGenerator("LogCalls") {
+case class LogCalls() extends ManipulationGenerator("LogCalls") {
   override def manipulate(d: Defn.Def): Defn.Def = {
     val stats = d.extract[Stat]
-    val logger = q"println(${d.name.value} called)"
+    val logger = q"println(${d.name.value + " was called"})"
     d.withStats(logger :: stats)
   }
 }
