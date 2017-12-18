@@ -31,7 +31,7 @@ object IdentityGenerator extends ExtensionGenerator("Identity")
   *
   * Note: These *will* generate a companion if one does not exist.
   */
-trait CompanionGenerator extends Generator {
+abstract class CompanionGenerator(val name: String) extends Generator {
   def extendCompanion(c: Defn.Class): List[Stat] = Nil
   def extendCompanion(c: Defn.Type): List[Stat] = Nil
   def extendCompanion(c: Defn.Trait): List[Stat] = Nil
@@ -67,9 +67,10 @@ abstract class ManipulationGenerator(val name: String) extends Generator {
   *
   * Default: return the input
   */
-trait TransmutationGenerator extends Generator {
+abstract class TransmutationGenerator(val name: String) extends Generator {
   def transmute(c: Defn.Class): List[Defn] = c :: Nil
   def transmute(t: Defn.Trait): List[Defn] = t :: Nil
+  def transmute(t: Defn.Type): List[Defn] = t :: Nil
   def transmute(o: Defn.Object): List[Defn] = o :: Nil
   def transmute(d: Defn.Def): List[Defn] = d :: Nil
   def transmute(v: Defn.Val): List[Defn] = v :: Nil
