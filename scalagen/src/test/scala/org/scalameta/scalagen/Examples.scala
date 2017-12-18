@@ -27,6 +27,16 @@ case class PrintHi() extends ExtensionGenerator("PrintHi") {
   }
 }
 
+case class PrintHiInCompanion() extends CompanionGenerator("PrintHiInCompanion") {
+  override def extendCompanion(c: Defn.Class): List[Stat] = {
+    val hi: Lit.String = Lit.String("hi")
+    val hiMethod: Defn.Def =
+      q"def hi = println($hi)"
+
+    hiMethod :: Nil
+  }
+}
+
 case class TestRecurse() extends ExtensionGenerator("TestRecurse") {
   override def extend(c: Defn.Class): List[Stat] = {
     val clazz = q"@PrintHi class Foo"
@@ -40,5 +50,29 @@ case class LogCalls() extends ManipulationGenerator("LogCalls") {
     val stats = d.extract[Stat]
     val logger = q"println(${d.name.value + " was called"})"
     d.withStats(logger :: stats)
+  }
+}
+
+case class Freeish() extends TransmutationGenerator("Freeish") {
+  override def transmute(t: Defn.Trait): List[Defn] = {
+    val names: List[Term.Name] = t.extract[Stat].collect {
+      case d: Defn.Def => d.name
+    }
+
+    val subclasses = names.map(_.asType)
+
+    val trat = q"sealed trait ${t.name}"
+
+    val init = Init(t.name, Name.Anonymous(), Nil)
+    val template = template"$init"
+    val cases = subclasses.map(n => q"case class $n() extends $template")
+
+    trat :: cases
+  }
+}
+
+case class DeleteMe() extends TransmutationGenerator("DeleteMe") {
+  override def transmute(t: Defn.Trait): List[Defn] = {
+    Nil
   }
 }
