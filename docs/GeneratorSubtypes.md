@@ -37,7 +37,7 @@ case class Id(str: String) {
   def equals(other: Any): Boolean = {
     other match {
        case Id(otherStr) => str.equalsIgnoreCase(otherStr)
-       case _ => fasle
+       case _ => false
     }
   }
 }
@@ -122,6 +122,8 @@ def sum(ints: List[Int]): Int = {
   val start = System.currentTimeMillis
   val res = ints.sum
   val end = System.currentTimeMillis
+  val total = end - start
+  println(s"sum took $total ms")
   res
 }
 ```
