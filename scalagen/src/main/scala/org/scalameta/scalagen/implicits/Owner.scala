@@ -12,17 +12,16 @@ import scala.meta._
   * We will need to tweak this a lot before it is perfect.
   *
   */
-trait LogicalParent {
+trait Owner {
 
   // TODO: Complete this list
-  implicit class LogicalParent(t: Tree) {
-    def logicalParent: Option[Tree] = {
+  implicit class XtensionLogicalParent(t: Tree) {
+    def owner: Option[Tree] = {
       t.parent match {
         case Some(p) =>
           p match {
-            case b: Term.Block => b.logicalParent
-            case t: Template => t.logicalParent
-            case other => Some(other)
+            case b: Member => Some(b)
+            case other => other.owner
           }
         case _ => None
       }

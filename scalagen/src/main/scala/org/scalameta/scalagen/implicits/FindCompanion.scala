@@ -35,15 +35,15 @@ trait FindCompanion {
     }
   }
 
-  implicit class FindCompanionClass(c: Defn.Class) {
+  implicit class XtensionFindCompanionClass(c: Defn.Class) {
     def companionObject: Option[Defn.Object] = findCompanion(c.name.value, c)
   }
 
-  implicit class FindCompanionType(t: Defn.Type) {
+  implicit class XtensionFindCompanionType(t: Defn.Type) {
     def companionObject: Option[Defn.Object] = findCompanion(t.name.value, t)
   }
 
-  implicit class FindCompanionTrait(t: Defn.Trait) {
+  implicit class XtensionFindCompanionTrait(t: Defn.Trait) {
     def companionObject: Option[Defn.Object] = findCompanion(t.name.value, t)
   }
 }
