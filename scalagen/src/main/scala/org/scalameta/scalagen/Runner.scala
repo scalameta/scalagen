@@ -20,12 +20,11 @@ case class Runner(generators: Set[Generator], recurse: Boolean = false) {
     generators.map(g => g.name -> g).toMap
 
   // These are necessary due to restrictions with how we can traverse the tree.
-  // It's possible that with more transformation strategies in scalameta, these would be unnecessary.
+  // It's possible that with more transformation strategies, these would be unnecessary.
   val transmutationCache: mutable.Map[Structurally[Tree], TransmutationResult] = mutable.Map()
   val companionExtensionCache: mutable.Map[String, List[Stat]] = mutable.Map()
 
   // TODO: Make the asInstanceOf not necessary by using a custom transform
-  // This also traverses pre-order, which is wrong
   // We can also optimize this, by not traversing entire tree's
   def transform[A <: Tree](in: A): A = {
     in.leafFirstTransform {
@@ -52,15 +51,11 @@ case class Runner(generators: Set[Generator], recurse: Boolean = false) {
     val result = generator.foldLeft(postCompanion)((c, g) => applyGenerator(c, g))
 
     // If we are expanding recursive definitions
-    if (recurse) {
-      // Aka did not noop
-
-      if (result.syntax != t.syntax) {
-        return transform(result)
-      }
+    if (recurse && !result.isEqual(t)) {
+      transform(result)
+    } else {
+      result
     }
-
-    result
   }
 
   /**
@@ -312,6 +307,9 @@ case class Runner(generators: Set[Generator], recurse: Boolean = false) {
     t.withMods(newMods)
   }
 
+  /**
+    * Find generators in the list of annotations of this tree.
+    */
   private def findGenerators[B <: Tree: ModExtractor](a: B): List[Generator] = {
     a.extract[Mod].collect {
       case Mod.Annot(Init(Type.Name(n), _, _)) if generator_cache.contains(n) =>

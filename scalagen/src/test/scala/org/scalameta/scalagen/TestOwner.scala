@@ -12,7 +12,7 @@ class TestLogicalParent extends FunSuite {
   test("Logical parent works") {
     val clazz: Defn.Class = q"class Foo { def bar }"
 
-    assert(clazz.extract[Stat].head.logicalParent.contains(clazz))
+    assert(clazz.extract[Stat].head.owner.contains(clazz))
   }
 
 }

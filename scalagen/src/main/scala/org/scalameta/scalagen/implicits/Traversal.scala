@@ -4,7 +4,7 @@ import scala.meta._
 
 trait Traversal {
 
-  implicit class LeafFirstTraversal(t: Tree) {
+  implicit class XtensionLeafFirstTraversal(t: Tree) {
     def leafFirstTransform(f: PartialFunction[Tree, Tree]): Tree = {
       object transformer extends Transformer {
         override def apply(tree: Tree): Tree = {
