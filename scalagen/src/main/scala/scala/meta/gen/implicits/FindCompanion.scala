@@ -1,7 +1,8 @@
-package org.scalameta.scalagen.implicits
+package scala.meta.gen.implicits
 
 import scala.meta._
 import scala.meta.contrib._
+import scala.meta.gen._
 
 /**
   * For the purposes of scalagen,

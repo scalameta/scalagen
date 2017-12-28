@@ -1,7 +1,7 @@
-package org.scalameta.scalagen.generators
+package scala.meta.gen
 
-import scala.meta._
 import scala.annotation.StaticAnnotation
+import scala.meta._
 
 trait Generator extends StaticAnnotation {
   def name: String

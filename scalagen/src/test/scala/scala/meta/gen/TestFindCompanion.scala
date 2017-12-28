@@ -1,9 +1,9 @@
-package org.scalameta.scalagen
+package scala.meta.gen
 
 import org.scalatest.FunSuite
+
 import scala.meta._
 import scala.meta.contrib._
-import org.scalameta.scalagen.implicits._
 
 class TestFindCompanion extends FunSuite {
 

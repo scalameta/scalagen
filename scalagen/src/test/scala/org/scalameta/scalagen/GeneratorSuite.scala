@@ -1,9 +1,9 @@
 package org.scalameta.scalagen
 
-import org.scalameta.scalagen.generators.Generator
 import org.scalatest.FunSuite
 
 import scala.meta._
+import scala.meta.gen.Generator
 
 class GeneratorSuite extends FunSuite {
 

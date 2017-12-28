@@ -2,7 +2,7 @@ package org.scalameta.scalagen
 
 import scala.meta._
 import scala.meta.contrib._
-import org.scalameta.scalagen.generators._
+import scala.meta.gen._
 
 /**
   * Will print the structure of the class as it's toString.

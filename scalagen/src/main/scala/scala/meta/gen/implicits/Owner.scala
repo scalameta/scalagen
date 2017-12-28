@@ -1,4 +1,4 @@
-package org.scalameta.scalagen.implicits
+package scala.meta.gen.implicits
 
 import scala.meta._
 

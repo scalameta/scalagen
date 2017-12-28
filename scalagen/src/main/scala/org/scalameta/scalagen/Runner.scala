@@ -1,13 +1,17 @@
 package org.scalameta.scalagen
 
-import org.scalameta.scalagen.generators._
-
 import scala.meta._
 import scala.meta.contrib._
-import org.scalameta.scalagen.implicits._
-
+import scala.meta.gen._
 import scala.collection.mutable
 import scala.meta.contrib.equality.Structurally
+import scala.meta.gen.{
+  CompanionGenerator,
+  ExtensionGenerator,
+  Generator,
+  ManipulationGenerator,
+  TransmutationGenerator
+}
 
 case class TransmutationResult(in: Stat, out: List[Defn])
 
