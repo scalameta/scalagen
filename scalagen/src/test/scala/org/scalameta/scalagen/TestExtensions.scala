@@ -2,8 +2,6 @@ package org.scalameta.scalagen
 
 import scala.meta._
 import scala.meta.contrib._
-import org.scalameta.scalagen.generators._
-import org.scalatest._
 
 class TestExtensions extends GeneratorSuite {
 

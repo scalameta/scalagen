@@ -1,4 +1,4 @@
-package org.scalameta.scalagen.instances
+package scala.meta.gen.instances
 
 import scala.meta._
 import scala.meta.contrib._
