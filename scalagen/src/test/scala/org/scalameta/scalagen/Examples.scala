@@ -1,5 +1,7 @@
 package org.scalameta.scalagen
 
+import fastparse.core.Logger
+
 import scala.meta._
 import scala.meta.contrib._
 import scala.meta.gen._
@@ -75,4 +77,9 @@ case class DeleteMe() extends TransmutationGenerator("DeleteMe") {
   override def transmute(t: Defn.Trait): List[Defn] = {
     Nil
   }
+}
+
+case class Abort() extends ExtensionGenerator("Abort") {
+  override def extend(c: Defn.Class): List[Stat] =
+    abort("Nothing to see here...")
 }

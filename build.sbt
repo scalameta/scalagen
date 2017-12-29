@@ -9,8 +9,11 @@ lazy val sharedSettings = Def.settings(
   version := "0.1",
   scalaVersion := "2.12.4",
   libraryDependencies ++=
-    "org.scalameta" %% "scalameta" % "2.1.3" ::
+    "ch.qos.logback" % "logback-classic" % "1.2.3" ::
+      "com.typesafe.scala-logging" %% "scala-logging" % "3.7.2" ::
+      "org.scalameta" %% "scalameta" % "2.1.3" ::
       "org.scalameta" %% "contrib" % "2.1.3" ::
+      "org.scalactic" %% "scalactic" % "3.0.4" ::
       "org.scalactic" %% "scalactic" % "3.0.4" ::
       "org.scalatest" %% "scalatest" % "3.0.4" % "test" :: Nil,
   scalacOptions ++= "-Xfatal-warnings" :: Nil
