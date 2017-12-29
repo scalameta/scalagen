@@ -15,7 +15,7 @@ class TestManipulation extends GeneratorSuite {
         }
        """
 
-    val res = generate(deff, LogCalls())
+    val res = generate(deff, LogCalls)
 
     withClue(res.syntax) {
       assert(expected isEqual res)

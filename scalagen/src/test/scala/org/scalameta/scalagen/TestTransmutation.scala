@@ -19,7 +19,7 @@ class TestTransmutation extends GeneratorSuite {
                case class ask() extends IO
              """
 
-    val res = generate(src, Freeish())
+    val res = generate(src, Freeish)
 
     withClue(res.syntax) {
       assert(expected isEqual res)
@@ -36,7 +36,7 @@ class TestTransmutation extends GeneratorSuite {
 
     val expected: Source = source""
 
-    val res = generate(src, DeleteMe())
+    val res = generate(src, DeleteMe)
 
     withClue(res.syntax) {
       assert(expected isEqual res)
@@ -52,7 +52,7 @@ class TestTransmutation extends GeneratorSuite {
 
     val expected: Source = source"trait Foo {}"
 
-    val res = generate(src, DeleteMe())
+    val res = generate(src, DeleteMe)
 
     withClue(res.syntax) {
       assert(expected isEqual res)

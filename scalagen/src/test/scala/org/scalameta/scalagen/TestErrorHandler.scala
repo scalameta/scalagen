@@ -10,7 +10,7 @@ class TestErrorHandler extends GeneratorSuite {
       q"@Abort case class Foo(x: Int, y: Int)"
 
     assertThrows[FatalGenerationException] {
-      generate(clazz, Abort())
+      generate(clazz, Abort)
     }
   }
 

@@ -16,7 +16,7 @@ class TestCompanionExtension extends GeneratorSuite {
                }
              """
 
-    val res = generate(src, PrintHiInCompanion())
+    val res = generate(src, PrintHiInCompanion)
 
     withClue(res.syntax) {
       assert(expected isEqual res)
@@ -42,7 +42,7 @@ class TestCompanionExtension extends GeneratorSuite {
                }
              """
 
-    val res = generate(src, PrintHiInCompanion())
+    val res = generate(src, PrintHiInCompanion)
 
     withClue(res.syntax) {
       assert(expected isEqual res)
