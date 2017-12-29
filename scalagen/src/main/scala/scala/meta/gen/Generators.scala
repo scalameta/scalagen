@@ -35,6 +35,8 @@ abstract class CompanionGenerator(val name: String) extends Generator {
   def extendCompanion(c: Defn.Class): List[Stat] = Nil
   def extendCompanion(c: Defn.Type): List[Stat] = Nil
   def extendCompanion(c: Defn.Trait): List[Stat] = Nil
+
+  def extendCompanion(t: Decl.Type): List[Stat] = Nil
 }
 
 /**
@@ -49,10 +51,16 @@ abstract class CompanionGenerator(val name: String) extends Generator {
 abstract class ManipulationGenerator(val name: String) extends Generator {
   def manipulate(c: Defn.Class): Defn.Class = c
   def manipulate(t: Defn.Trait): Defn.Trait = t
+  def manipulate(t: Defn.Type): Defn.Type = t
   def manipulate(o: Defn.Object): Defn.Object = o
   def manipulate(d: Defn.Def): Defn.Def = d
   def manipulate(v: Defn.Val): Defn.Val = v
   def manipulate(v: Defn.Var): Defn.Var = v
+
+  def manipulate(v: Decl.Var): Decl.Var = v
+  def manipulate(v: Decl.Val): Decl.Val = v
+  def manipulate(d: Decl.Def): Decl.Def = d
+  def manipulate(t: Decl.Type): Decl.Type = t
 }
 
 /**
@@ -68,13 +76,18 @@ abstract class ManipulationGenerator(val name: String) extends Generator {
   * Default: return the input
   */
 abstract class TransmutationGenerator(val name: String) extends Generator {
-  def transmute(c: Defn.Class): List[Defn] = c :: Nil
-  def transmute(t: Defn.Trait): List[Defn] = t :: Nil
-  def transmute(t: Defn.Type): List[Defn] = t :: Nil
-  def transmute(o: Defn.Object): List[Defn] = o :: Nil
-  def transmute(d: Defn.Def): List[Defn] = d :: Nil
-  def transmute(v: Defn.Val): List[Defn] = v :: Nil
-  def transmute(v: Defn.Var): List[Defn] = v :: Nil
+  def transmute(c: Defn.Class): List[Stat] = c :: Nil
+  def transmute(t: Defn.Trait): List[Stat] = t :: Nil
+  def transmute(t: Defn.Type): List[Stat] = t :: Nil
+  def transmute(o: Defn.Object): List[Stat] = o :: Nil
+  def transmute(d: Defn.Def): List[Stat] = d :: Nil
+  def transmute(v: Defn.Val): List[Stat] = v :: Nil
+  def transmute(v: Defn.Var): List[Stat] = v :: Nil
+
+  def transmute(v: Decl.Var): List[Stat] = v :: Nil
+  def transmute(v: Decl.Val): List[Stat] = v :: Nil
+  def transmute(d: Decl.Def): List[Stat] = d :: Nil
+  def transmute(t: Decl.Type): List[Stat] = t :: Nil
 }
 
 /**

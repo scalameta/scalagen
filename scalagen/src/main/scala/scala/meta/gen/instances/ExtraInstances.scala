@@ -47,4 +47,28 @@ trait ExtraInstances {
 
   implicit val replaceTermParamMod: Replace[Term.Param, Mod] =
     Replace((a, bs) => a.copy(mods = bs))
+
+  implicit val extractDeclDefMod: Extract[Decl.Def, Mod] =
+    Extract(_.mods)
+
+  implicit val replaceDeclDefMod: Replace[Decl.Def, Mod] =
+    Replace((a, bs) => a.copy(mods = bs))
+
+  implicit val extractDeclVarMod: Extract[Decl.Var, Mod] =
+    Extract(_.mods)
+
+  implicit val replaceDeclVarMod: Replace[Decl.Var, Mod] =
+    Replace((a, bs) => a.copy(mods = bs))
+
+  implicit val extractDeclValMod: Extract[Decl.Val, Mod] =
+    Extract(_.mods)
+
+  implicit val replaceDeclValMod: Replace[Decl.Val, Mod] =
+    Replace((a, bs) => a.copy(mods = bs))
+
+  implicit val extractDeclTypeMod: Extract[Decl.Type, Mod] =
+    Extract(_.mods)
+
+  implicit val replaceDeclTypeMod: Replace[Decl.Type, Mod] =
+    Replace((a, bs) => a.copy(mods = bs))
 }

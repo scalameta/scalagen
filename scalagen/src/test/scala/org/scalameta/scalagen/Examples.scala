@@ -74,9 +74,17 @@ case class Freeish() extends TransmutationGenerator("Freeish") {
 }
 
 case class DeleteMe() extends TransmutationGenerator("DeleteMe") {
-  override def transmute(t: Defn.Trait): List[Defn] = {
-    Nil
-  }
+  override def transmute(t: Defn.Trait): List[Defn] = Nil
+  override def transmute(c: Defn.Class): List[Stat] = Nil
+  override def transmute(t: Defn.Type): List[Stat] = Nil
+  override def transmute(o: Defn.Object): List[Stat] = Nil
+  override def transmute(d: Defn.Def): List[Stat] = Nil
+  override def transmute(v: Defn.Val): List[Stat] = Nil
+  override def transmute(v: Defn.Var): List[Stat] = Nil
+  override def transmute(v: Decl.Var): List[Stat] = Nil
+  override def transmute(v: Decl.Val): List[Stat] = Nil
+  override def transmute(d: Decl.Def): List[Stat] = Nil
+  override def transmute(t: Decl.Type): List[Stat] = Nil
 }
 
 case class Abort() extends ExtensionGenerator("Abort") {
