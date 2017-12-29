@@ -15,7 +15,7 @@ class TestExtensions extends GeneratorSuite {
           }
        """
 
-    val res = generate(clazz, SyntaxToString())
+    val res = generate(clazz, SyntaxToString)
 
     withClue(res.syntax) {
       assert(expected isEqual res)
@@ -33,7 +33,7 @@ class TestExtensions extends GeneratorSuite {
         }
        """
 
-    val res = generate(clazz, SyntaxToString(), PrintHi())
+    val res = generate(clazz, SyntaxToString, PrintHi)
 
     withClue(res.syntax) {
       assert(expected isEqual res)
@@ -51,7 +51,7 @@ class TestExtensions extends GeneratorSuite {
         }
        """
 
-    val res = generate(clazz, PrintHi())
+    val res = generate(clazz, PrintHi)
 
     withClue(res.syntax) {
       assert(expected isEqual res)
@@ -68,7 +68,7 @@ class TestExtensions extends GeneratorSuite {
         }
        """
 
-    val res = generate(clazz, PrintHi(), TestRecurse())
+    val res = generate(clazz, PrintHi, TestRecurse)
 
     withClue(res.syntax) {
       assert(expected isEqual res)
@@ -87,7 +87,7 @@ class TestExtensions extends GeneratorSuite {
         }
        """
 
-    val res = generateRecursive(clazz, PrintHi(), TestRecurse())
+    val res = generateRecursive(clazz, PrintHi, TestRecurse)
 
     withClue(res.syntax) {
       assert(expected isEqual res)
@@ -110,7 +110,7 @@ class TestExtensions extends GeneratorSuite {
         }
        """
 
-    val res = generate(clazz, PrintHi(), TestRecurse())
+    val res = generate(clazz, PrintHi, TestRecurse)
 
     withClue(res.syntax) {
       assert(expected isEqual res)
@@ -119,7 +119,7 @@ class TestExtensions extends GeneratorSuite {
 
   test("Expansion noop") {
     val clazz: Defn.Class = q"case class Foo(x: Int, y: Int)"
-    val res = generate(clazz, PrintHi(), TestRecurse())
+    val res = generate(clazz, PrintHi, TestRecurse)
 
     withClue(res.syntax) {
       assert(clazz isEqual res)

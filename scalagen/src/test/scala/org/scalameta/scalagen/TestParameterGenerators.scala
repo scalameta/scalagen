@@ -15,7 +15,7 @@ class TestParameterGenerators extends GeneratorSuite {
           }
        """
 
-    val res = generate(clazz, NonNull())
+    val res = generate(clazz, NonNull)
 
     withClue(res.syntax) {
       assert(expected isEqual res)
