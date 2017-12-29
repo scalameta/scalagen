@@ -97,3 +97,4 @@ case class NonNull() extends ParameterGenerator("NonNull") {
     val value = q"assert(${p.name.asTerm} != null)"
     value :: Nil
   }
+}
