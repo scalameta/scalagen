@@ -15,6 +15,11 @@ import scala.meta.gen.{
 
 case class TransmutationResult(in: Stat, out: List[Defn])
 
+object Runner {
+  val statOrdering: (Stat, Stat) => Boolean = (x: Stat, y: Stat) =>
+    x.isInstanceOf[Defn.Object] && !y.isInstanceOf[Defn.Object]
+}
+
 /**
   * Will transform only extension generators.
   * But is the fastest and easiest to implement
