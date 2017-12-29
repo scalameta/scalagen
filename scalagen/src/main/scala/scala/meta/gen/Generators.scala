@@ -76,3 +76,15 @@ abstract class TransmutationGenerator(val name: String) extends Generator {
   def transmute(v: Defn.Val): List[Defn] = v :: Nil
   def transmute(v: Defn.Var): List[Defn] = v :: Nil
 }
+
+/**
+  * Used when you wish to generate stats based on a specific parameter.
+  *
+  * For example, adding assertion checks.
+  *
+  * Default: No stats added
+  */
+abstract class ParameterGenerator(val name: String) extends Generator {
+  def extend(p: Type.Param): List[Stat] = Nil
+  def extend(p: Term.Param): List[Stat] = Nil
+}
