@@ -42,4 +42,20 @@ class TestTransmutation extends GeneratorSuite {
       assert(expected isEqual res)
     }
   }
+
+  test("Decls work") {
+    val src: Source =
+      source"""trait Foo {
+                 @DeleteMe type bar
+              }
+            """
+
+    val expected: Source = source"trait Foo {}"
+
+    val res = generate(src, DeleteMe())
+
+    withClue(res.syntax) {
+      assert(expected isEqual res)
+    }
+  }
 }

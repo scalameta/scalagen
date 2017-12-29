@@ -43,6 +43,14 @@ case class Runner(generators: Set[Generator], recurse: Boolean = false) {
           generate(v, findGenerators(v))
         case v: Type.Param =>
           generate(v, findGenerators(v))
+        case v: Decl.Var =>
+          generate(v, findGenerators(v))
+        case d: Decl.Def =>
+          generate(d, findGenerators(d))
+        case v: Decl.Val =>
+          generate(v, findGenerators(v))
+        case t: Decl.Type =>
+          generate(t, findGenerators(t))
         case other => finalizeCompanion(finalizeTransmutations(other))
       }
       .asInstanceOf[A]
@@ -236,6 +244,9 @@ case class Runner(generators: Set[Generator], recurse: Boolean = false) {
       case t: Defn.Trait =>
         val trat = g.manipulate(t)
         removeAnnot(trat, g.name)
+      case t: Defn.Type =>
+        val tpe = g.manipulate(t)
+        removeAnnot(tpe, g.name)
       case d: Defn.Def =>
         val deff = g.manipulate(d)
         removeAnnot(deff, g.name)
@@ -245,6 +256,18 @@ case class Runner(generators: Set[Generator], recurse: Boolean = false) {
       case v: Defn.Var =>
         val varr = g.manipulate(v)
         removeAnnot(varr, g.name)
+      case d: Decl.Def =>
+        val deff = g.manipulate(d)
+        removeAnnot(deff, g.name)
+      case v: Decl.Val =>
+        val vall = g.manipulate(v)
+        removeAnnot(vall, g.name)
+      case v: Decl.Var =>
+        val varr = g.manipulate(v)
+        removeAnnot(varr, g.name)
+      case t: Decl.Type =>
+        val tpe = g.manipulate(t)
+        removeAnnot(tpe, g.name)
     }
 
     res.asInstanceOf[A]
@@ -311,6 +334,30 @@ case class Runner(generators: Set[Generator], recurse: Boolean = false) {
           Structurally(withoutStatsOrParams(v.parent.get)),
           TransmutationResult(varWithoutAnnot, g.transmute(v)))
         varWithoutAnnot
+      case d: Decl.Def =>
+        val defWithoutAnnot = removeAnnot(d, g.name)
+        transmutationCache.put(
+          Structurally(withoutStatsOrParams(d.parent.get)),
+          TransmutationResult(defWithoutAnnot, g.transmute(d)))
+        defWithoutAnnot
+      case v: Decl.Val =>
+        val valWithoutAnnot = removeAnnot(v, g.name)
+        transmutationCache.put(
+          Structurally(withoutStatsOrParams(v.parent.get)),
+          TransmutationResult(valWithoutAnnot, g.transmute(v)))
+        valWithoutAnnot
+      case v: Decl.Var =>
+        val varWithoutAnnot = removeAnnot(v, g.name)
+        transmutationCache.put(
+          Structurally(withoutStatsOrParams(v.parent.get)),
+          TransmutationResult(varWithoutAnnot, g.transmute(v)))
+        varWithoutAnnot
+      case t: Decl.Type =>
+        val tpeWithoutAnnot = removeAnnot(t, g.name)
+        transmutationCache.put(
+          Structurally(withoutStatsOrParams(t.parent.get)),
+          TransmutationResult(tpeWithoutAnnot, g.transmute(t)))
+        tpeWithoutAnnot
     }
 
     res.asInstanceOf[A]
