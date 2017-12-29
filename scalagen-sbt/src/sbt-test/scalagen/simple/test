@@ -1,0 +1,12 @@
+> generate
+
+> checkUntouchedHello
+> checkGenerators
+
+> compile
+
+$ exists target/scala-2.12/classes/Main.class
+$ exists target/scala-2.12/classes/Main$.class
+$ exists target/scala-2.12/classes/Main$delayedInit$body.class
+$ exists target/scala-2.12/classes/App.class
+$ exists target/scala-2.12/classes/App$.class
