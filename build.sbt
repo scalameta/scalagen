@@ -6,7 +6,7 @@ name := "scalagen"
 import sbt._
 import sbt.Keys._
 
-lazy val sharedSettings = Def.settings(
+lazy val sharedSettings: Def.SettingsDefinition = Def.settings(
   updateOptions := updateOptions.value.withCachedResolution(true),
   organization := "org.scalameta",
   version := "0.1-SNAPSHOT",
@@ -30,14 +30,14 @@ lazy val scalagen =
   project
     .in(file("scalagen"))
     .settings(sharedSettings)
+    .settings(name := "scalagen")
 
 // JVM sbt plugin
 lazy val sbtScalagen =
   project
     .in(file("scalagen-sbt"))
-    .settings(
-      sharedSettings,
-      sbtPlugin := true,
-      moduleName := "sbt-scalagen")
+    .settings(sharedSettings, sbtPlugin := true, scriptedLaunchOpts := {
+      scriptedLaunchOpts.value ++
+        Seq("-Xmx1024M", "-Dplugin.version=" + version.value)
+    }, scriptedBufferLog := false, moduleName := "sbt-scalagen")
     .dependsOn(scalagen)
-
