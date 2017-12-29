@@ -83,3 +83,9 @@ case class Abort() extends ExtensionGenerator("Abort") {
   override def extend(c: Defn.Class): List[Stat] =
     abort("Nothing to see here...")
 }
+
+case class NonNull() extends ParameterGenerator("NonNull") {
+  override def extend(p: Term.Param): List[Stat] = {
+    val value = q"assert(${p.name.asTerm} != null)"
+    value :: Nil
+  }
