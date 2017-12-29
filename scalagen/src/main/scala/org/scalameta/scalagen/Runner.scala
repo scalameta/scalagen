@@ -38,6 +38,8 @@ case class Runner(generators: Set[Generator], recurse: Boolean = false) {
           generate(o, findGenerators(o))
         case t: Defn.Trait =>
           generate(t, findGenerators(t))
+        case t: Defn.Type =>
+          generate(t, findGenerators(t))
         case d: Defn.Def =>
           generate(d, findGenerators(d))
         case v: Defn.Val =>
