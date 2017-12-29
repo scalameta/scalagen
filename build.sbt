@@ -3,10 +3,13 @@ import sbt.Keys.version
 onLoadMessage := s"Welcome to scalagen ${version.value}"
 name := "scalagen"
 
+import sbt._
+import sbt.Keys._
+
 lazy val sharedSettings = Def.settings(
   updateOptions := updateOptions.value.withCachedResolution(true),
   organization := "org.scalameta",
-  version := "0.1",
+  version := "0.1-SNAPSHOT",
   scalaVersion := "2.12.4",
   libraryDependencies ++=
     "ch.qos.logback" % "logback-classic" % "1.2.3" ::
@@ -28,6 +31,9 @@ lazy val scalagen =
 lazy val sbtScalagen =
   project
     .in(file("scalagen-sbt"))
-    .settings(sharedSettings)
-    .settings(moduleName := "sbt-scalagen")
+    .settings(
+      sharedSettings,
+      sbtPlugin := true,
+      moduleName := "sbt-scalagen")
     .dependsOn(scalagen)
+
