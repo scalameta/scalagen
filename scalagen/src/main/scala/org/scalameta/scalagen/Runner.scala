@@ -383,16 +383,7 @@ case class Runner(generators: Set[Generator], recurse: Boolean = false) {
   private def findGenerators[B <: Tree: ModExtractor](a: B): List[Generator] = {
     a.extract[Mod].collect {
       case Mod.Annot(Init(Type.Name(n), _, _)) if generator_cache.contains(n) =>
-        generator_cache(n) match {
-          case m: ManipulationGenerator => m
-          case e: ExtensionGenerator => e
-          case t: TransmutationGenerator => t
-          case c: CompanionGenerator => c
-          case p: ParameterGenerator => p
-          case g =>
-            throw new IllegalStateException(
-              s"The runner cannot handle this type of generator: ${g.getClass.getSimpleName}")
-        }
+        generator_cache(n)
     }
   }
 }

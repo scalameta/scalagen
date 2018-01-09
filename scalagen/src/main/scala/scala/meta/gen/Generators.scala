@@ -3,9 +3,18 @@ package scala.meta.gen
 import scala.annotation.StaticAnnotation
 import scala.meta._
 
-trait Generator extends StaticAnnotation {
-  def name: String
-}
+/**
+  * All Generators should extend this class.
+  *
+  * The traits are just different types of expansion
+  */
+abstract class Generator(val name: String)
+  extends ExtensionGeneratorApi
+  with CompanionGeneratorApi
+  with ManipulationGeneratorApi
+  with TransmutationGeneratorApi
+  with ParameterGeneratorApi
+  with StaticAnnotation
 
 /**
   * Use this trait for extending existing definitions.
@@ -14,13 +23,13 @@ trait Generator extends StaticAnnotation {
   *
   * Default: Add no new stats
   */
-abstract class ExtensionGenerator(val name: String) extends Generator {
+trait ExtensionGeneratorApi {
   def extend(c: Defn.Class): List[Stat] = Nil
   def extend(t: Defn.Trait): List[Stat] = Nil
   def extend(o: Defn.Object): List[Stat] = Nil
 }
 
-object IdentityGenerator extends ExtensionGenerator("Identity")
+object IdentityGenerator extends Generator("Identity")
 
 /**
   * Use this trait for extending the case class of a Defn.
@@ -31,7 +40,7 @@ object IdentityGenerator extends ExtensionGenerator("Identity")
   *
   * Note: These *will* generate a companion if one does not exist.
   */
-abstract class CompanionGenerator(val name: String) extends Generator {
+trait CompanionGeneratorApi {
   def extendCompanion(c: Defn.Class): List[Stat] = Nil
   def extendCompanion(c: Defn.Type): List[Stat] = Nil
   def extendCompanion(c: Defn.Trait): List[Stat] = Nil
@@ -48,7 +57,7 @@ abstract class CompanionGenerator(val name: String) extends Generator {
   *
   * Default: return the input
   */
-abstract class ManipulationGenerator(val name: String) extends Generator {
+trait ManipulationGeneratorApi {
   def manipulate(c: Defn.Class): Defn.Class = c
   def manipulate(t: Defn.Trait): Defn.Trait = t
   def manipulate(t: Defn.Type): Defn.Type = t
@@ -75,7 +84,7 @@ abstract class ManipulationGenerator(val name: String) extends Generator {
   *
   * Default: return the input
   */
-abstract class TransmutationGenerator(val name: String) extends Generator {
+trait TransmutationGeneratorApi{
   def transmute(c: Defn.Class): List[Stat] = c :: Nil
   def transmute(t: Defn.Trait): List[Stat] = t :: Nil
   def transmute(t: Defn.Type): List[Stat] = t :: Nil
@@ -97,7 +106,7 @@ abstract class TransmutationGenerator(val name: String) extends Generator {
   *
   * Default: No stats added
   */
-abstract class ParameterGenerator(val name: String) extends Generator {
+trait ParameterGeneratorApi {
   def extend(p: Type.Param): List[Stat] = Nil
   def extend(p: Term.Param): List[Stat] = Nil
 }
