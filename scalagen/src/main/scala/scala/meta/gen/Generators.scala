@@ -18,6 +18,8 @@ abstract class ExtensionGenerator(val name: String) extends Generator {
   def extend(c: Defn.Class): List[Stat] = Nil
   def extend(t: Defn.Trait): List[Stat] = Nil
   def extend(o: Defn.Object): List[Stat] = Nil
+
+  def extend[A <: Tree : StatExtractor](a: A): List[Stat] = Nil
 }
 
 object IdentityGenerator extends ExtensionGenerator("Identity")
@@ -37,6 +39,8 @@ abstract class CompanionGenerator(val name: String) extends Generator {
   def extendCompanion(c: Defn.Trait): List[Stat] = Nil
 
   def extendCompanion(t: Decl.Type): List[Stat] = Nil
+
+  def extendCompanion[A <: Tree : StatExtractor](a: A): List[Stat] = Nil
 }
 
 /**
@@ -61,6 +65,9 @@ abstract class ManipulationGenerator(val name: String) extends Generator {
   def manipulate(v: Decl.Val): Decl.Val = v
   def manipulate(d: Decl.Def): Decl.Def = d
   def manipulate(t: Decl.Type): Decl.Type = t
+
+  def manipulate[A <: Tree : StatReplacer](a: A): A = a
+  def manipulate[A <: Tree : ModReplacer](a: A): A = a
 }
 
 /**
@@ -88,6 +95,9 @@ abstract class TransmutationGenerator(val name: String) extends Generator {
   def transmute(v: Decl.Val): List[Stat] = v :: Nil
   def transmute(d: Decl.Def): List[Stat] = d :: Nil
   def transmute(t: Decl.Type): List[Stat] = t :: Nil
+
+  def transmute[A <: Stat : StatReplacer](a: A): List[Stat] = a :: Nil
+  def transmute[A <: Stat : ModReplacer](a: A): List[Stat] = a :: Nil
 }
 
 /**
