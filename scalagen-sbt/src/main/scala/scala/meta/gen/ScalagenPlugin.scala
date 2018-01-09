@@ -18,30 +18,22 @@ object ScalagenPlugin extends AutoPlugin {
 
   object autoImport {
 
-    lazy val listGenerators =
+    lazy val scalagenListGenerators =
       taskKey[Unit]("Lists all generators enabled")
 
-    lazy val generate =
+    lazy val scalagen =
       taskKey[Seq[File]]("Applies scalagen Generators to sources")
 
-    lazy val generateRecursive =
+    lazy val scalagenRecursive =
       settingKey[Boolean]("Should scalagen recursively generate definitions")
-    lazy val generators = settingKey[Set[Generator]]("Set of Generators to use")
 
-    lazy val baseGenerateSettings: Seq[Def.Setting[_]] = Seq(
-      generators := Set.empty,
-      generateRecursive := false,
-      generate := generateTask.value,
-      (sources in Compile) := ((sources in Compile).value
-        .toSet[File] -- (unmanagedSources in Compile).value.toSet[File]).toSeq,
-      sourceGenerators in Compile += generate
-    )
+    lazy val scalagenGenerators = settingKey[Set[Generator]]("Set of Generators to use")
 
     lazy val generateTask = Def.task {
       GeneratorRunner(
         (unmanagedSources in Compile).value,
-        generators.value,
-        generateRecursive.value,
+        scalagenGenerators.value,
+        scalagenRecursive.value,
         streams.value,
         sourceDirectory.value.toPath,
         sourceManaged.value.toPath)
@@ -49,6 +41,15 @@ object ScalagenPlugin extends AutoPlugin {
   }
 
   import autoImport._
+
+  lazy val baseGenerateSettings: Seq[Def.Setting[_]] = Seq(
+    scalagenGenerators := Set.empty,
+    scalagenRecursive := false,
+    scalagen := generateTask.value,
+    (sources in Compile) := ((sources in Compile).value.toSet[File] --
+      (unmanagedSources in Compile).value.toSet[File]).toSeq,
+    sourceGenerators in Compile += scalagen
+  )
 
   override lazy val projectSettings: Seq[Def.Setting[_]] =
     baseGenerateSettings
