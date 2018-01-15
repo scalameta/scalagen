@@ -13,10 +13,14 @@ lazy val sharedSettings = Def.settings(
       "com.typesafe.scala-logging" %% "scala-logging" % "3.7.2" ::
       "org.scalameta" %% "scalameta" % "2.1.3" ::
       "org.scalameta" %% "contrib" % "2.1.3" ::
+      "org.typelevel" %% "cats-core" % "1.0.1" ::
       "org.scalactic" %% "scalactic" % "3.0.4" ::
       "org.scalactic" %% "scalactic" % "3.0.4" ::
       "org.scalatest" %% "scalatest" % "3.0.4" % "test" :: Nil,
-  scalacOptions ++= "-Xfatal-warnings" :: Nil
+  scalacOptions ++=
+    "-Ypartial-unification" ::
+      "-Xfatal-warnings" ::
+      Nil
 )
 
 lazy val scalagen =
