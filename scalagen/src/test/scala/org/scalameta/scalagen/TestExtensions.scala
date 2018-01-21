@@ -58,6 +58,37 @@ class TestExtensions extends GeneratorSuite {
     }
   }
 
+  test("Typeclass based Expansion works") {
+    val source: Source =
+      source"""
+               @PrintHi case class Foo(x: Int, y: Int)
+               @PrintHi trait Foo
+               @PrintHi object Foo
+            """
+
+    val expected: Source =
+      source"""
+        case class Foo(x: Int, y: Int) {
+          def hi = println("hi")
+        }
+
+        trait Foo {
+          def hi = println("hi")
+        }
+
+        object Foo {
+          def hi = println("hi")
+        }
+       """
+
+    val res = generate(source, PrintHi)
+
+    withClue(res.syntax) {
+      assert(expected isEqual res)
+    }
+  }
+
+
   test("Recursion Disabled by default") {
     val clazz: Defn.Class =
       q"@TestRecurse case class Foo(x: Int, y: Int)"

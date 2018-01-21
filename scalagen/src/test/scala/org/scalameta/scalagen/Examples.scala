@@ -1,7 +1,5 @@
 package org.scalameta.scalagen
 
-import fastparse.core.Logger
-
 import scala.meta._
 import scala.meta.contrib._
 import scala.meta.gen._
@@ -20,7 +18,7 @@ object SyntaxToString extends ExtensionGenerator("SyntaxToString") {
 }
 
 object PrintHi extends ExtensionGenerator("PrintHi") {
-  override def extend(c: Defn.Class): List[Stat] = {
+  override def extend[A <: Tree : StatExtractor](a: A): List[Stat] = {
     val hi: Lit.String = Lit.String("hi")
     val hiMethod: Defn.Def =
       q"def hi = println($hi)"
@@ -74,21 +72,11 @@ object Freeish extends TransmutationGenerator("Freeish") {
 }
 
 object DeleteMe extends TransmutationGenerator("DeleteMe") {
-  override def transmute(t: Defn.Trait): List[Defn] = Nil
-  override def transmute(c: Defn.Class): List[Stat] = Nil
-  override def transmute(t: Defn.Type): List[Stat] = Nil
-  override def transmute(o: Defn.Object): List[Stat] = Nil
-  override def transmute(d: Defn.Def): List[Stat] = Nil
-  override def transmute(v: Defn.Val): List[Stat] = Nil
-  override def transmute(v: Defn.Var): List[Stat] = Nil
-  override def transmute(v: Decl.Var): List[Stat] = Nil
-  override def transmute(v: Decl.Val): List[Stat] = Nil
-  override def transmute(d: Decl.Def): List[Stat] = Nil
-  override def transmute(t: Decl.Type): List[Stat] = Nil
+  override def transmute[A <: Tree : StatReplacer](a: A): List[Stat] = Nil
 }
 
 object Abort extends ExtensionGenerator("Abort") {
-  override def extend(c: Defn.Class): List[Stat] =
+  override def extend[A <: Tree : StatExtractor](a: A): List[Stat] =
     abort("Nothing to see here...")
 }
 
