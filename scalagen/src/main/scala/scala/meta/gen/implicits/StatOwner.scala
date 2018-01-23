@@ -35,7 +35,7 @@ trait StatOwner {
     /**
       * Whether this tree is indeed an "Owner"
       */
-    def isOwner(t: Tree): Boolean =
+    def isOwner: Boolean =
       t match {
         case _: Source | _: Pkg | _: Defn => true
         case _ => false
@@ -45,7 +45,7 @@ trait StatOwner {
       t.parent.flatMap {
         case b: Term.Block => b.owner
         case t: Template => t.owner
-        case p if isOwner(p) => Some(p)
+        case p if p.isOwner => Some(p)
         case _ => None
       }
 
@@ -53,7 +53,7 @@ trait StatOwner {
       t.children.flatMap {
         case b: Term.Block => b.ownerChildren
         case t: Template => t.ownerChildren
-        case p if isOwner(p) => List(p)
+        case p if p.isOwner => List(p)
         case _ => Nil
       }
   }

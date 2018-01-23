@@ -17,6 +17,8 @@ lazy val sharedSettings: Def.SettingsDefinition = Def.settings(
       "org.scalameta" %% "scalameta" % "2.1.3" ::
       "org.scalameta" %% "contrib" % "2.1.3" ::
       "org.typelevel" %% "cats-core" % "1.0.1" ::
+      "org.typelevel" %% "cats-free" % "1.0.1" ::
+      "com.github.julien-truffaut" %% "monocle-core" % "1.5.0-cats" ::
       "org.scalactic" %% "scalactic" % "3.0.4" ::
       "org.scalactic" %% "scalactic" % "3.0.4" ::
       "org.scalatest" %% "scalatest" % "3.0.4" % "test" :: Nil,
@@ -29,8 +31,11 @@ lazy val sharedSettings: Def.SettingsDefinition = Def.settings(
 lazy val scalagen =
   project
     .in(file("scalagen"))
-    .settings(sharedSettings)
-    .settings(name := "scalagen")
+    .settings(
+      sharedSettings,
+      name := "scalagen",
+      addCompilerPlugin("org.spire-math" %% "kind-projector" % "0.9.4")
+    )
 
 // JVM sbt plugin
 lazy val sbtScalagen =
