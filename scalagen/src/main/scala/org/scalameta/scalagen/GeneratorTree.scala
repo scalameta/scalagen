@@ -9,14 +9,29 @@ import scala.meta.{XtensionShow => _, _}
 import scala.meta.gen.TypeclassExtractors.retrieveAnnotExtractInstance
 import scala.meta.gen._
 
+case class GeneratorInputContext(src: Tree, toExpand: List[Generator])
 object GeneratorTree {
+
+  /**
+    * OwnerTree is just simple tree with an arbritraty ,
+    * The issue is we cannot use the name Tree as we do not want
+    * conflicts with scalameta.tree
+    *
+    * TODO: Consider moving this out of scalagen
+    */
+  type GeneratorTree = Cofree[List, GeneratorInputContext]
+
+  /**
+    * Partially applied alias for OwnerTree. Allows use as a Functor/Monad etc.
+    */
+  type GeneratorTreeF[A] = Cofree[List, A]
 
   /**
     * Lazily build a Cofree from this tree.
     *
     * Cofree objects are only created as the tree is traversed.
     */
-  def apply(t: Tree): GeneratorTree =
+  def apply(t: Tree): GeneratorTreeF[Tree] =
     Cofree(t, Eval.later(t.children.map(apply)))
 
   /**
@@ -34,7 +49,9 @@ object GeneratorTree {
   /**
     * Will print all nodes visited by the given traversal
     */
-  def genTraversalString(t: Traversal[GeneratorTreeF[Tree], Tree], ot: GeneratorTree): String = {
+  def genTraversalString(
+      t: Traversal[GeneratorTreeF[GeneratorInputContext], GeneratorInputContext],
+      ot: GeneratorTree): String = {
     val childString =
       ot.tailForced
         .map(genTraversalString(t, _))
@@ -48,10 +65,10 @@ object GeneratorTree {
       case None =>
         error(childString)
         childString
-      case Some(tree) if childString.isEmpty =>
-        s" - ${treePrefixAndName(tree)}"
-      case Some(tree) =>
-        s""" - ${treePrefixAndName(tree)}
+      case Some(ctx) if childString.isEmpty =>
+        s" - ${treePrefixAndName(ctx.src)}"
+      case Some(ctx) =>
+        s""" - ${treePrefixAndName(ctx.src)}
            |  $childString""".stripMargin
     }
 
@@ -99,54 +116,52 @@ object GeneratorTree {
       .collect({ case Pat.Var(name) => name })
       .mkString(", ")
 
-  /**
-    * OwnerTree is just simple tree with an arbritraty ,
-    * The issue is we cannot use the name Tree as we do not want
-    * conflicts with scalameta.tree
-    *
-    * TODO: Consider moving this out of scalagen
-    */
-  type GeneratorTree = Cofree[List, Tree]
+  def regularTraversal[A]: Traversal[GeneratorTreeF[A], A] =
+    Traversal.fromTraverse[GeneratorTreeF, A](Traverse[GeneratorTreeF])
 
-  /**
-    * Partially applied alias for OwnerTree. Allows use as a Functor/Monad etc.
-    */
-  type GeneratorTreeF[A] = Cofree[List, A]
-
-  val regularTraversal: Traversal[GeneratorTreeF[Tree], Tree] =
-    Traversal.fromTraverse[GeneratorTreeF, Tree](Traverse[GeneratorTreeF])
-
-  val ownerPrism: Prism[GeneratorTree, GeneratorTree] =
-    Prism[GeneratorTree, GeneratorTree](t => {
+  val ownerPrism: Prism[GeneratorTreeF[Tree], GeneratorTreeF[Tree]] =
+    Prism[GeneratorTreeF[Tree], GeneratorTreeF[Tree]](t => {
       if (t.head.isOwner) Some(t)
       else None
     })(identity)
 
   val ownerTraversal: Traversal[GeneratorTreeF[Tree], Tree] =
-    ownerPrism.composeTraversal(regularTraversal)
+    ownerPrism.composeTraversal(regularTraversal[Tree])
 
-  def generatorPrism(gs: Set[Generator]): Prism[GeneratorTree, GeneratorTree] =
-    Prism[GeneratorTree, GeneratorTree](t => {
-      if (hasGenerator(t.head, gs)) Some(t)
-      else None
-    })(identity)
+  def generatorPrism(gs: Set[Generator]): Prism[GeneratorTreeF[Tree], GeneratorTree] =
+    Prism[GeneratorTreeF[Tree], GeneratorTree](t => {
+      if (hasGenerator(t.head, gs)) {
+        val context = GeneratorInputContext(t.head, getGeneratorsToExpand(t.head, gs))
+        Some(Cofree(context, Eval.now(List.empty[GeneratorTree])))
+      } else {
+        None
+      }
+    })(_.map(_.src))
 
   private def hasMatchingGenerator(a: Mod.Annot, gs: Set[Generator]): Boolean =
-    gs.exists { g =>
-      a.init.tpe match {
-        case Type.Name(value) => g.name == value
-        case _ => false
-      }
+    gs.exists(isMatching(a, _))
+
+  private def isMatching(a: Mod.Annot, g: Generator) = {
+    a.init.tpe match {
+      case Type.Name(value) => g.name == value
+      case _ => false
     }
+  }
 
   private def hasGenerator(tree: Tree, gs: Set[Generator]): Boolean =
     retrieveAnnotExtractInstance(tree)
       .map(_.extract(tree))
       .exists(_.exists(hasMatchingGenerator(_, gs)))
 
-  def generatorTraversal(gs: Set[Generator]): Traversal[GeneratorTree, Tree] =
+  private def getGeneratorsToExpand(tree: Tree, gs: Set[Generator]): List[Generator] =
+    retrieveAnnotExtractInstance(tree)
+      .fold(List[Mod.Annot]())(_.extract(tree))
+      .flatMap(annot => gs.find(isMatching(annot, _)))
+
+  def generatorTraversal(
+      gs: Set[Generator]): Traversal[GeneratorTreeF[Tree], GeneratorInputContext] =
     ownerPrism
       .composePrism(generatorPrism(gs))
-      .composeTraversal(regularTraversal)
+      .composeTraversal(regularTraversal[GeneratorInputContext])
 
 }
